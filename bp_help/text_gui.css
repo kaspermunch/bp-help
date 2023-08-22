@@ -1,0 +1,131 @@
+STEPS {
+    /* align: center middle; */
+    background: $background;
+    /* color: white; */
+
+    /* overflow-y: hidden; */
+}
+
+STEPS>Static {
+    width: 70;    
+}
+
+#title {
+    content-align-horizontal: center;
+    text-style: reverse;
+}
+
+#any-key {
+    content-align-horizontal: center;
+}
+
+/* #app-grid {
+    layout: grid;
+    grid-size: 3; 
+    grid-columns: 1fr 1fr 1fr;
+    grid-rows: 1fr 1fr 1fr;
+    grid-gutter: 1;
+} */
+
+#app-grid {
+    layout: grid;
+    grid-size: 3; 
+    grid-columns: 1fr 1fr 45;
+    grid-rows: 1fr 20% 80%;
+    /* grid-gutter: 1; */
+}
+
+#header > Static {
+    background: $background;
+    color: $primary;
+    margin-bottom: 1;
+    /* padding: 1; */
+}
+
+#header {
+    width: 100%;
+    height: 20%;
+    column-span: 3;
+    background: $background;
+    /* background: white; */
+    /* color: $primary; */
+    border: none;
+    align: center middle;
+}
+
+#left-pane > KeyLogger {
+    /* background: $panel; */
+    background: $background-lighten-3;
+    color: auto;
+    margin-bottom: 1;
+    margin-left: 1;
+    padding: 1;
+    overflow-y: hidden;
+}
+
+#left-pane {
+    width: 100%;
+    height: 100%;
+    row-span: 2;
+    column-span: 2;
+    /* background: $panel; */
+    background: $background;
+    /* border: black; */
+}
+
+#top-right {
+    /* height: 100%; */
+    background: $background;
+    /* background: white; */
+    row-span: 1;
+    column-span: 1;
+
+    /* text-align: center; */
+    /* content-align: center middle; */
+    /* align: center middle; */
+}
+
+#top-right > PlayerStats {
+    dock: right;
+    /* border: black; */
+    color: $primary;
+    width: auto;
+    height: 100%;
+    /* column-span: 1;
+    row-span: 1; */
+    margin-right: 1;
+    background: $background;
+}
+
+/* #datatable--header {
+    background: pink;
+} */
+
+
+
+
+#bottom-right {
+    height: 100%;
+    row-span: 1;
+    column-span: 1;
+    background: $background;
+    align: center middle;
+    margin-left: 6;
+    /* border: black; */
+    color: $primary;
+}
+/* 
+#bottom-right-final {
+    column-span: 2;
+} */
+
+#bottom-right > Static {
+    height: 100%;
+    /* background: $boost; */
+}
+
+
+
+
+
+
