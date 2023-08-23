@@ -10,6 +10,9 @@ import os
 import random
 import time
 
+
+# TODO: there should be no parentheses around single variables, function calls, method calls, literals
+
 def _push(_stack, _expr, _evl):
     _gl = globals()
     _is_callable = isinstance(_expr, typing.Hashable) and _expr in _gl and callable(_gl[_expr])

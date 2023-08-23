@@ -19,11 +19,11 @@ setup(name='bp_help',
                   'step-machine=bp_help.text_gui:run'
                   ],
         },
-    	install_requires=[
+        install_requires=[
           'pygments',
           'textual',
           'cloudpickle',
           'rich',
           'art',
-        ])
+        ]
       )

@@ -4,7 +4,6 @@ import random
 import os
 import pickle
 import datetime
-import cloudpickle as cp
 from collections import defaultdict
 from itertools import groupby
 from operator import itemgetter
@@ -19,8 +18,6 @@ progress = None
 #                        course_week_nr, leaf_prob, course_start_week, score_goals)
 
 from .controls import *
-
-
 
 
 class Expression:
@@ -68,6 +65,23 @@ class GetIndexExpression(Expression):
 
     def __str__(self):
         return str(self.name) + '[' + str(self.i) + ']'
+
+class NoArgMethodExpression(Expression):
+    def __init__(self, name, method):
+        self.name = name
+        self.method = method
+
+    def __str__(self):
+        return str(self.name) + f'.{self.method}()'
+
+class ArgMethodExpression(Expression):
+    def __init__(self, name, method, arg):
+        self.name = name
+        self.method = method
+        self.arg = arg
+
+    def __str__(self):
+        return str(self.name) + f'.{self.method}({self.arg})'
 
 class GetValueKeyExpression(Expression):
     def __init__(self, name, key):
@@ -174,7 +188,7 @@ def randomExpression(prob, leaf_prob, topic_probs):
     """To make sure all sub expressions are valid"""
     expr = _randomExpression(prob, leaf_prob, topic_probs)
     # TODO: find bugs instead of try/except hack...
-    while True:
+    for x in range(100):
         try:
             eval(str(expr))
         except:
@@ -211,6 +225,10 @@ def _randomExpression(prob, leaf_prob, topic_probs):
             variable_idx = find_variable_for_key([j], numbers)
             if variable_idx:
                 j = variable_idx
+            # if random.random() > 0.7:
+            #     method = random.choice(['split'])
+            #     arg = random.choice(strings)
+            #     return ArgMethodExpression(sl, method, arg)
             if random.random() > 0.7:
                 # list indexing
                 return GetIndexExpression(sl, i)
@@ -234,12 +252,22 @@ def _randomExpression(prob, leaf_prob, topic_probs):
             if variable_idx:
                 j = variable_idx
             if random.random() > 0.7:
+                method = random.choice(['upper', 'isdigit', 'lower'])
+                return NoArgMethodExpression(sl, method)
+            if random.random() > 0.6:
+                for _ in range(100):
+                    arg = random.choice(lists)
+                    if all([type(x) is str for x in arg]):
+                        break
+                method = random.choice(['join'])
+                return ArgMethodExpression(sl, method, arg)
+            elif random.random() > 0.3:
                 # string indexing
                 return GetIndexExpression(sl, i)
-            elif random.random() > 0.5:
+            elif random.random() > 0.2:
                 # string slicing
                 return SliceFrontExpression(sl, i)
-            elif random.random() > 0.3:
+            elif random.random() > 0.1:
                 # string slicing
                 return SliceBackExpression(sl, i)
             else:
@@ -269,6 +297,12 @@ def _randomExpression(prob, leaf_prob, topic_probs):
                 return ParenthesizedExpression(left)
             else:
                 return left
+        elif topic_probs['operations']['abs'] > p:
+            # len function
+            if type(eval(str(left))) in [int, float]:
+                return FunctionExpression(left, 'abs')
+            else:
+                return left
         elif topic_probs['operations']['len'] > p:
             # len function
             if type(eval(str(left))) in [str, list, dict]:
@@ -279,6 +313,12 @@ def _randomExpression(prob, leaf_prob, topic_probs):
             # len function
             if type(eval(str(left))) in [list]:
                 return FunctionExpression(left, 'sorted')
+            else:
+                return left                
+        elif topic_probs['operations']['list'] > p:
+            # len function
+            if type(eval(str(left))) in [str]:
+                return FunctionExpression(left, 'list')
             else:
                 return left                
         elif topic_probs['operations']['not_op'] > p:
@@ -369,6 +409,23 @@ def sparkline_bars(data):
     BARS = u' ▁▂▃▄▅▆▇█'
     if sum(data) == 0:
         return ''
+    
+    from statistics import mean, variance
+    from math import sqrt
+    cv = sqrt(variance(data)) / mean(data)
+    gold, silver, bronse = u'🥇', u'🥈', u'🥉'  
+    if cv < 0.3:
+        medal = gold
+    elif cv < 0.4:
+        medal = silver
+    elif cv < 0.5:
+        medal = bronse
+    else:
+        medal = ''
+
+                #https://www.i2symbol.com/symbols/smileys
+    # gold, silver, bronse = u'🥇', u'🥈', u'🥉'
+
     # data = [1, 2, 3, 4, 5, 6, 7]
 #    data = [float(x) for x in data if x]
     data = [(len(BARS)-1)*n/max(data) for n in data]
@@ -381,7 +438,7 @@ def sparkline_bars(data):
             if thres <= n < thres+width:
                 indexes.append(i)
                 break
-    sparkline = ''.join(BARS[i] for i in indexes)
+    sparkline = ''.join(BARS[i] for i in indexes) + medal
     return sparkline
 
 def streak_stars(streak, emoji=''):
@@ -463,15 +520,12 @@ class KeyLogger(RichLog):
 
             self.post_message(self.Updated())
 
-
             # points_missing = goal_score - progress['current_score']  * 1000000
             # if points_missing > 0  and points_missing < 100000000:
             #     print('Almost there...')
             #     print('Earn', 'XX' 'to reach goal')
 
         return self.is_correct
-
-
 
     def write_steps(self):
 
@@ -483,67 +537,28 @@ class KeyLogger(RichLog):
                 lst.append(f'{i+1:>2}   ' + highlight_code(s))
         self.write(''.join(lst))
 
-        # for i, s in enumerate(self.steps_list):
-        #     content = []
-        #     if i == focal:
-        #         content.append(f'[bold]{i+1:>2}[/bold]   ' + highlight_code(s))
-        #     else:
-        #         content.append(f'{i+1:>2}   ' + highlight_code(s))
-        #     self.write(''.join(content))
-
-            # if i == focal:
-            #     self.write(f'[bold]{i+1:>2}[/bold]   ' + highlight_code(s))
-            # else:
-            #     self.write(f'{i+1:>2}   ' + highlight_code(s))
-
     def next_expression(self):
         self.clear()
         self.focal = None
         self.attempts = 0
         self.is_correct = False
-        # update/write progress
-
-
-#        global foo, bar, baz, n, label, tag, fix, order, mat, accounts, records
-
-        # # FOR DEBUGGING
-        # steps_list = []
-        # while len(steps_list) < 3:
-        #     expr = get_expression(1, leaf_prob=leaf_prob, topic_probs=topic_probs)
-        #     try:
-        #         steps_list = _steps(expr)
-        #     except Exception as e:
-        #         steps_list = [expr] + traceback.format_exc().split('\n')
-
-        # corret_order = steps_list[:]
-        # self.write('\n'.join(steps_list))
-
 
         steps_list = []
-        # assert 0
-        while len(steps_list) < 3 or len(steps_list) > 10 or any(len(x) > 80 for x in steps_list):
-            expr = get_expression(1, leaf_prob=leaf_prob, topic_probs=topic_probs)
-            if 10 < len(expr) < 80:
-                continue
+        while len(steps_list) < min_steps or len(steps_list) > max_steps or any(len(x) > max_expr_len for x in steps_list):
+            expr = get_expression(1, leaf_prob=leaf_prob, topic_probs=topic_probs) 
             try:
                 steps_list = _steps(expr)
             except Exception as e:
                 # TODO: make it more robust instead of catching exceptions...
                 continue
 
- 
         self.correct_order = steps_list[:]
-        while all(x == y for x, y in zip(steps_list, self.correct_order)):
+        for _ in range(100):
             random.shuffle(steps_list)
-
-        self.steps_list = steps_list#[s.strip() for s in steps_list]
-
-        # self.write(''.join([f'{i+1:>2}   ' + highlight_code(s) for (i, s) in enumerate(self.steps_list)]))
-        # lst = []
-        # for (i, s) in enumerate(self.steps_list):
-        #     lst.append(f'{i+1:>2}   ' + highlight_code(s))
-        # self.write(''.join(lst))
-
+            if not all(x == y for x, y in zip(steps_list, self.correct_order)):
+                break
+            
+        self.steps_list = steps_list
         self.write_steps()
 
 
@@ -608,7 +623,7 @@ def compute_effort():
     effort = {}
     for weeknr in range(1, 15):
         effort[weeknr] = [problems_solved[weeknr].count(d) for d in range(1, 8)]
-    # assert 0, effort
+
     return effort
 
 class PlayerStats(DataTable):
@@ -664,7 +679,8 @@ class STEPS(Screen):
     def compose(self) -> ComposeResult:
 #        yield Header()
         with Container(id="header"):
-            text = text2art("STEP-TRAINER", font="tarty3")
+            # text = text2art("STEP-TRAINER", font="tarty3")
+            text = text2art("WAX ON - WAX OFF", font="tarty3")
             head = Align(f'{text}', align='center', vertical='middle')
             yield Static(head)
         with Container(id="app-grid"):
