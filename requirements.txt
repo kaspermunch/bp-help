@@ -1,5 +1,4 @@
 pygments
 textual
-cloudpickle
 rich
 art

@@ -16,13 +16,12 @@ setup(name='bp_help',
       entry_points = {
             'console_scripts': [
                   'print-steps=bp_help.print_steps:run_student_file',
-                  'step-machine=bp_help.text_gui:run'
+                  'myiagi=bp_help.text_gui:run'
                   ],
         },
         install_requires=[
           'pygments',
           'textual',
-          'cloudpickle',
           'rich',
           'art',
         ]
