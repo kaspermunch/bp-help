@@ -25,7 +25,7 @@ exec(open(os.path.dirname(__file__) + '/steps.py').read())
 import urllib.request
 control_file_dropbox_download_link = 'https://www.dropbox.com/scl/fi/yc0oc1puznb24wn3510rq/controls.py?rlkey=flhlz14ixqtw2gyehevty9dy5&dl=1'
 try:
-    control_code = urllib.request.urlopen(control_file_dropbox_download_link).read()
+    control_code = urllib.request.urlopen(control_file_dropbox_download_link).read().decode()
 except:
     pass
 finally:
