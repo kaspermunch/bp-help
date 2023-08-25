@@ -544,13 +544,15 @@ class KeyLogger(RichLog):
         self.is_correct = False
 
         steps_list = []
-        while len(steps_list) < min_steps or len(steps_list) > max_steps or any(len(x) > max_expr_len for x in steps_list):
+        for _ in range(1000):
             expr = get_expression(1, leaf_prob=leaf_prob, topic_probs=topic_probs) 
             try:
                 steps_list = _steps(expr)
             except Exception as e:
                 # TODO: make it more robust instead of catching exceptions...
                 continue
+            if len(steps_list) < min_steps or len(steps_list) > max_steps or any(len(x) > max_expr_len for x in steps_list):
+                break
 
         self.correct_order = steps_list[:]
         for _ in range(100):
