@@ -22,9 +22,10 @@ name=${PWD##*/}
 
 # conda skeleton with meta info
 conda skeleton pypi --output-dir conda $name
+#--noarch-python 
 
 # for for each version of python
-for pythonversion in 3.6 3.7 3.8; do
+for pythonversion in 3.9; do
     conda-build --python $pythonversion conda/$name $@
 done
 
