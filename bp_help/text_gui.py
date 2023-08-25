@@ -551,7 +551,7 @@ class KeyLogger(RichLog):
             except Exception as e:
                 # TODO: make it more robust instead of catching exceptions...
                 continue
-            if len(steps_list) < min_steps or len(steps_list) > max_steps or any(len(x) > max_expr_len for x in steps_list):
+            if not (len(steps_list) < min_steps or len(steps_list) > max_steps or any(len(x) > max_expr_len for x in steps_list)):
                 break
 
         self.correct_order = steps_list[:]

@@ -1,5 +1,6 @@
 
 import random
+from collections import OrderedDict
 
 class Expression:
     pass
@@ -118,27 +119,7 @@ class FunctionExpression(Expression):
 
     def __str__(self):
         return self.fun + "(" + str(self.exp) + ")"
-
-
-# e1 = Number(5)
-# print(e1)
-
-# e2 = BinaryExpression(Number(8), "+", ParenthesizedExpression(BinaryExpression(Number(7), "*", e1)))
-# print(e2)
-
-
-a, b = 1, 2 # values should overlap with indexes and keys
-aa, bb = 'a', 'x' # values should overlap with keys
-aaa, bbb = [1, 2, 3], [[11, 22], [33, 444]]
-aaaa, bbbb = {1:11, 2:22}, {'a':{'x': 1, 'y': 2}, 'b':{'x': 1, 'y': 2}}
-
-numbers = ['a', 'b']
-strings = ['aa', 'bb']
-lists = ['aaa', 'bbb']
-dicts = ['aaaa', 'bbbb']
-
-
-
+    
 
 def find_variable_for_key(keys, variables):
     vars = []
@@ -151,6 +132,7 @@ def find_variable_for_key(keys, variables):
     else:
         return None
     
+
 def find_variable_for_index(indices, variables):
     vars = []
     for var in variables:
@@ -170,6 +152,7 @@ def get_expression(prob, leaf_prob, topic_probs):
 def randomExpression(prob, leaf_prob, topic_probs):
     """To make sure all sub expressions are valid"""
     expr = _randomExpression(prob, leaf_prob, topic_probs)
+    # TODO: find bugs instead of try/except hack...
     while True:
         try:
             eval(str(expr))
@@ -178,6 +161,7 @@ def randomExpression(prob, leaf_prob, topic_probs):
             continue
         break
     return expr
+
 
 def _randomExpression(prob, leaf_prob, topic_probs):
 
@@ -312,44 +296,66 @@ def _randomExpression(prob, leaf_prob, topic_probs):
             return expr
 
 
-from collections import OrderedDict
-
-course_week_nr = 8
-
-topic_probs = dict(
-    types=OrderedDict(dicts=int(course_week_nr >= 5) * 1, 
-            lists=int(course_week_nr >= 4) * 1, 
-            strings=int(course_week_nr >= 3) * 1, 
-            number=int(course_week_nr >= 1) * 1, 
-            number_literals=int(course_week_nr >= 1) * 1),
-    operations=OrderedDict(parentheses=int(course_week_nr >= 2) * 2, 
-                    len=int(course_week_nr >= 3) * 5, 
-                    sorted=int(course_week_nr >= 3) * 1, 
-                    not_op=int(course_week_nr >= 2) * 1, 
-                    logic_op=int(course_week_nr >= 2) * 1, 
-                    arithmetic_op=int(course_week_nr >= 1) * 10)
-)
-tot = sum(topic_probs['types'].values())
-for key in topic_probs['types']:
-    topic_probs['types'][key] /= tot
-tot = 0
-for key in topic_probs['types']:
-    tot += topic_probs['types'][key]
-    topic_probs['types'][key] = tot
-
-tot = sum(topic_probs['operations'].values())
-for key in topic_probs['operations']:
-    topic_probs['operations'][key] /= tot
-tot = 0
-for key in topic_probs['operations']:
-    tot += topic_probs['operations'][key]
-    topic_probs['operations'][key] = tot
-
-print(topic_probs['operations'].values())    
 
 
-nr = 0
-for i in range(10):
-    expr = get_expression(1, leaf_prob=0.66, topic_probs=topic_probs)
-    print(expr)
-    # print('V', eval(str(expr)))
+# integers = [1, 2, 5, 7] # values should overlap with indexes and keys
+# random.shuffle(integers)
+# foo, bar, baz, n = integers 
+# label, tag, count = 'Ib', 'abcdefg', '42' # values should overlap with keys
+# order, mat = [1, 2, 3], [[11, 22], [33, 444]]
+# counts, records = {1:11, 2:22}, {'Ib':{'x': 1, 'y': 2}, 'Bo':{'x': 1, 'y': 2}}
+
+
+
+integers = [1, 2, 3, 4] # values should overlap with indexes and keys
+random.shuffle(integers)
+foo, bar, baz, n = integers 
+label, tag, fix = 'Ib', 'abcdefg', '42' # values should overlap with keys
+order, mat = [1, 2, 3, 4], [[11, 22], [33, 44]]
+accounts, records = {1:11, 2:22}, {'Ib':{'x': 1, 'y': 2}, 'Bo':{'x': 1, 'y': 2}}
+
+
+numbers = ['foo', 'bar', 'baz', 'n']
+strings = ['label', 'tag', 'fix']
+lists = ['order', 'mat']
+dicts = ['accounts', 'records']
+
+
+# course_week_nr = 8
+
+# topic_probs = dict(
+#     types=OrderedDict(dicts=int(course_week_nr >= 5) * 1, 
+#             lists=int(course_week_nr >= 4) * 1, 
+#             strings=int(course_week_nr >= 3) * 1, 
+#             number=int(course_week_nr >= 1) * 1, 
+#             number_literals=int(course_week_nr >= 1) * 1),
+#     operations=OrderedDict(parentheses=int(course_week_nr >= 2) * 2, 
+#                     len=int(course_week_nr >= 3) * 5, 
+#                     sorted=int(course_week_nr >= 3) * 1, 
+#                     not_op=int(course_week_nr >= 2) * 1, 
+#                     logic_op=int(course_week_nr >= 2) * 1, 
+#                     arithmetic_op=int(course_week_nr >= 1) * 10)
+# )
+# tot = sum(topic_probs['types'].values())
+# for key in topic_probs['types']:
+#     topic_probs['types'][key] /= tot
+# tot = 0
+# for key in topic_probs['types']:
+#     tot += topic_probs['types'][key]
+#     topic_probs['types'][key] = tot
+
+# tot = sum(topic_probs['operations'].values())
+# for key in topic_probs['operations']:
+#     topic_probs['operations'][key] /= tot
+# tot = 0
+# for key in topic_probs['operations']:
+#     tot += topic_probs['operations'][key]
+#     topic_probs['operations'][key] = tot
+
+if __name__ == '__main__':
+    nr = 0
+    for i in range(30):
+        expr = get_expression(1, leaf_prob=0.66, topic_probs=topic_probs)
+        if 10 < len(expr) < 100:
+            print(expr)
+        # print('V', eval(str(expr)))
