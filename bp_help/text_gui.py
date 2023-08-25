@@ -29,7 +29,7 @@ try:
 except:
     pass
 finally:
-    with open('controls.py') as f:
+    with open(os.path.join(os.path.dirname(__file__), 'controls.py', 'w')) as f:
         f.write(control_code)
 
 from .controls import *

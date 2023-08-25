@@ -1,4 +1,4 @@
-{% set version = "0.2" %}
+{% set version = "0.5" %}
 
 package:
   name: bp-help
@@ -9,7 +9,7 @@ source:
 
 build:
   noarch: python
-  number: 4
+  number: 2
   # script: python -m pip install --no-deps --ignore-installed .
   entry_points:
     - print-steps = bp_help.print_steps:run_student_file
