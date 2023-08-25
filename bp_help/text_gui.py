@@ -17,7 +17,23 @@ progress = None
 # from .controls import (topic_probs, praise, encouragement, score_multiplier, 
 #                        course_week_nr, leaf_prob, course_start_week, score_goals)
 
+exec(open(os.path.dirname(__file__) + '/steps.py').read())
+
+
+
+# get updated controls from dropbox
+import urllib.request
+control_file_dropbox_download_link = 'https://www.dropbox.com/scl/fi/yc0oc1puznb24wn3510rq/controls.py?rlkey=flhlz14ixqtw2gyehevty9dy5&dl=1'
+try:
+    control_code = urllib.request.urlopen(control_file_dropbox_download_link).read()
+except:
+    pass
+finally:
+    with open('controls.py') as f:
+        f.write(control_code)
+
 from .controls import *
+
 
 
 class Expression:
