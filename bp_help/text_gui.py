@@ -28,7 +28,7 @@ try:
     control_code = urllib.request.urlopen(control_file_dropbox_download_link).read().decode()
 except:
     pass
-finally:
+else:
     with open(os.path.join(os.path.dirname(__file__), 'controls.py'), 'w') as f:
         f.write(control_code)
 
