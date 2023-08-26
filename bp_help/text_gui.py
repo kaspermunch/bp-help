@@ -2,13 +2,19 @@
 import re
 import random
 import os
+import sys
 import pickle
 import datetime
 from collections import defaultdict
 from itertools import groupby
 from operator import itemgetter
+import subprocess
+import shlex
+import shutil
+from distutils.version import LooseVersion
+import platform
 
-from urllib.request import urlopen
+# from urllib.request import urlopen
 import locale
 locale.setlocale(locale.LC_ALL, '')  # Use '' for auto, or force e.g. to 'en_US.UTF-8'
 
@@ -21,16 +27,16 @@ exec(open(os.path.dirname(__file__) + '/steps.py').read())
 
 
 
-# get updated controls from dropbox
-import urllib.request
-control_file_dropbox_download_link = 'https://www.dropbox.com/scl/fi/yc0oc1puznb24wn3510rq/controls.py?rlkey=flhlz14ixqtw2gyehevty9dy5&dl=1'
-try:
-    control_code = urllib.request.urlopen(control_file_dropbox_download_link).read().decode()
-except:
-    pass
-else:
-    with open(os.path.join(os.path.dirname(__file__), 'controls.py'), 'w') as f:
-        f.write(control_code)
+# # get updated controls from dropbox
+# import urllib.request
+# control_file_dropbox_download_link = 'https://www.dropbox.com/scl/fi/yc0oc1puznb24wn3510rq/controls.py?rlkey=flhlz14ixqtw2gyehevty9dy5&dl=1'
+# try:
+#     control_code = urllib.request.urlopen(control_file_dropbox_download_link).read().decode()
+# except:
+#     pass
+# else:
+#     with open(os.path.join(os.path.dirname(__file__), 'controls.py'), 'w') as f:
+#         f.write(control_code)
 
 from .controls import *
 
@@ -567,6 +573,7 @@ class KeyLogger(RichLog):
             except Exception as e:
                 # TODO: make it more robust instead of catching exceptions...
                 continue
+            # if not (len(steps_list) < min_steps or len(steps_list) > max_steps or any(len(x) > max_expr_len for x in steps_list)):
             if not (len(steps_list) < min_steps or len(steps_list) > max_steps or any(len(x) > max_expr_len for x in steps_list)):
                 break
 
@@ -763,12 +770,41 @@ class STEPSApp(App):
 #     course_week_nr = max(1, course_week_nr)
 #     return course_week_nr
 
+def check_for_conda_update():
+    """Checks for a more recent conda version and prints a message.
+    """
+    cmd = 'conda search -c kaspermunch bp-help'
+    cmd = shlex.split(cmd)
+    cmd[0] = shutil.which(cmd[0])    
+    conda_search = subprocess.check_output(cmd, shell=False).decode()
+    newest_version = conda_search.strip().splitlines()[-1].split()[1]
+    cmd = 'conda list -f bp-help'
+    cmd = shlex.split(cmd)
+    cmd[0] = shutil.which(cmd[0])    
+    conda_search = subprocess.check_output(cmd, shell=False).decode()
+    this_version = conda_search.strip().splitlines()[-1].split()[1]
+    if LooseVersion(newest_version) > LooseVersion(this_version):
+        print('\nPlease update bp-help to get the most most recent version ({})'.format(newest_version))
+        print('before you start the game. To update run this command:')
+        # msg += '\n\tconda install bp-help={}\n'.format(newest_version)
+        print('\n    conda update bp-help\n')
+        sys.exit()
+
+
 def run():
+
+    if not LooseVersion(platform.python_version()) >= LooseVersion('3.11'):
+        print(f'It seems you are running python {platform.python_version()}. This version is not yet supported.')
+        sys.exit()
+
+    check_for_conda_update()
 
     global course_week_nr, progress, pickle_file_name, score_goals
     # course_week_nr = get_course_week_nr()
 
-    pickle_file_name = os.path.dirname(__file__) + '/progress.pkl'
+    # pickle_file_name = os.path.dirname(__file__) + '~/.bp_help_progress.pkl'
+    pickle_file_name = os.path.join(os.path.expanduser('~'), '.bp_help_progress.pkl')
+     
     if os.path.exists(pickle_file_name):
         with open(pickle_file_name, 'rb') as pickle_file:
             progress = pickle.load(pickle_file)
