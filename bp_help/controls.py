@@ -15,6 +15,10 @@ praise = [
         "Nice going",
         "You are a rockstar",
         "How high can you go?"
+        "Fantastic",
+        "You are doing great",
+        "You are a natural",
+        "Awesome",
     ]
 random.shuffle(praise)
 praise = itertools.cycle(praise)
@@ -24,6 +28,11 @@ encouragement = [
         "You can do this",
         "Keep it up. Almost there",
         "Give it your best",
+        "You are doing great",
+        "You are getting there",
+        "You are doing better than you think",
+        "Practise makes the master",
+        "Keep going",
     ]
 random.shuffle(encouragement)
 encouragement = itertools.cycle(encouragement)
