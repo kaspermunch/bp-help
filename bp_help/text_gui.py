@@ -787,13 +787,13 @@ def check_for_conda_update():
         print('\nPlease update bp-help to get the most most recent version ({})'.format(newest_version))
         print('before you start the game. To update run this command:')
         # msg += '\n\tconda install bp-help={}\n'.format(newest_version)
-        print('\n    conda update bp-help\n')
+        print('\n    conda update -y bp-help\n')
         sys.exit()
 
 
 def run():
 
-    if not LooseVersion(platform.python_version()) >= LooseVersion('3.11'):
+    if LooseVersion(platform.python_version()) >= LooseVersion('3.11'):
         print(f'It seems you are running python {platform.python_version()}. This version is not yet supported.')
         sys.exit()
 
