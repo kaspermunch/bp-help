@@ -23,7 +23,7 @@ setup(name='bp_help',
                   'myiagi=bp_help.text_gui:run'
                   ],
         },
-        python_requires='<3.11 >=3.6',
+        python_requires='<3.11,>=3.6',
         install_requires=[
           'pygments',
           'textual',
