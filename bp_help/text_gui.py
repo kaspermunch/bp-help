@@ -5,6 +5,7 @@ import os
 import sys
 import pickle
 import datetime
+import time
 from collections import defaultdict
 from itertools import groupby
 from operator import itemgetter
@@ -533,8 +534,12 @@ class KeyLogger(RichLog):
             score = course_week_nr * len(self.steps_list)/(self.attempts+1)
 
             progress['scores'].append((score, datetime.datetime.now()))
-            progress['current_score'] = sum(s for (s, t) in progress['scores'][-20:])/20 #* 0.9**(time.time() - progress['time'])/(60 * 60 * 24)
-            progress['highscores'][course_week_nr] = max(progress['current_score'], progress['highscores'][course_week_nr])
+
+            # progress['current_score'] = sum(s for (s, t) in progress['scores'][-20:])/20 #* 0.9**(time.time() - progress['time'])/(60 * 60 * 24)
+            # progress['highscores'][course_week_nr] = max(progress['current_score'], progress['highscores'][course_week_nr])
+            progress['current_score'] = sum(s*0.9**(time.time()-t)/(60*60*24) for (s, t) in progress['scores']) #* 0.9**(time.time() - progress['time'])/(60 * 60 * 24)
+            progress['highscores'][course_week_nr] = progress['current_score']
+
             with open(pickle_file_name, 'wb') as pickle_file:
                 pickle.dump(progress, pickle_file)
 
@@ -661,7 +666,7 @@ class PlayerStats(DataTable):
 
         #https://www.i2symbol.com/symbols/smileys
 
-        rows = [("", "Stamina", "Streak", "High score"),]
+        rows = [("", "Stamina", "Streak", "Score"),]
         for weeknr in range(1, 15):
 
             score = int(progress['highscores'][weeknr] * score_multiplier)
