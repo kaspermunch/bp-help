@@ -517,7 +517,7 @@ class KeyLogger(RichLog):
                 self.write(f'\nPress Enter to get next one or Ctrl-C to quit')
 
     def key_down(self):
-        if not self.is_correct and self.focal is not None and self.focal <= len(self.steps_list):
+        if not self.is_correct and self.focal is not None and self.focal < len(self.steps_list):
             i = self.focal - 1
             self.steps_list[i], self.steps_list[i+1] = self.steps_list[i+1], self.steps_list[i]
             self.focal += 1
@@ -535,10 +535,10 @@ class KeyLogger(RichLog):
 
             progress['scores'].append((score, datetime.datetime.now()))
 
-            progress['current_score'] = sum(s for (s, t) in progress['scores'][-20:])/20 #* 0.9**(time.time() - progress['time'])/(60 * 60 * 24)
-            progress['highscores'][course_week_nr] = max(progress['current_score'], progress['highscores'][course_week_nr])
-            # progress['current_score'] = sum(s*0.9**(time.time()-datetime.datetime.timestamp(t))/(60*60*24) for (s, t) in progress['scores']) #* 0.9**(time.time() - progress['time'])/(60 * 60 * 24)
-            # progress['highscores'][course_week_nr] = progress['current_score']
+            # progress['current_score'] = sum(s for (s, t) in progress['scores'][-20:])/20 #* 0.9**(time.time() - progress['time'])/(60 * 60 * 24)
+            # progress['highscores'][course_week_nr] = max(progress['current_score'], progress['highscores'][course_week_nr])
+            progress['current_score'] = sum(score_multiplier*s*0.9**((time.time()-datetime.datetime.timestamp(t))/(60*60*24)) for (s, t) in progress['scores']) / score_multiplier
+            progress['highscores'][course_week_nr] = progress['current_score']
 
             with open(pickle_file_name, 'wb') as pickle_file:
                 pickle.dump(progress, pickle_file)
@@ -670,6 +670,7 @@ class PlayerStats(DataTable):
         for weeknr in range(1, 15):
 
             score = int(progress['highscores'][weeknr] * score_multiplier)
+
             if weeknr > course_week_nr:
                 score = ''
 
@@ -751,7 +752,7 @@ class STEPSApp(App):
 
     def on_key_logger_updated(self):
         score = int(progress['current_score']*score_multiplier)
-#        assert 0, format_score(score, current=True)
+
         streaks = compute_streaks()
         effort = compute_effort()
 
@@ -816,6 +817,10 @@ def run():
     else:
         progress = {'scores': [], 'current_score': 0,
                     'highscores': dict([(w, 0) for w in range(1, 15)])}
+
+    progress['current_score'] = sum(score_multiplier*s*0.9**((time.time()-datetime.datetime.timestamp(t))/(60*60*24)) for (s, t) in progress['scores']) / score_multiplier
+    progress['highscores'][course_week_nr] = progress['current_score']
+#    assert 0, (progress, [(time.time()-datetime.datetime.timestamp(t)) for (s, t) in progress['scores']])
 
     app = STEPSApp()
     app.run()
