@@ -496,7 +496,7 @@ def _steps(_expr, _print_steps=False):
     _step_list.append(_expr)
 
     # if it is an assignment statement, cut off the assignment part as a prefix
-    _match = re.match(r'\s*\S+\s+[*/+-]?=\s+', _expr)
+    _match = re.match(r'\s*\S+\s*[*/+-]?=\s*', _expr)
     if _match:
         _prefix = _match.group(0)
     else:
