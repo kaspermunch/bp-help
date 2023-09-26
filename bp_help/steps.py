@@ -492,7 +492,7 @@ def _steps(_expr, _print_steps=False):
 
     # print the expression
     if _print_steps:
-        print(f"{'As written:'.ljust(15)}  {_expr}")
+        print(f"{'As written:'.ljust(15)}  {_expr}", file=sys.stderr)
     _step_list.append(_expr)
 
     # if it is an assignment statement, cut off the assignment part as a prefix
@@ -582,7 +582,7 @@ def _steps(_expr, _print_steps=False):
                 if not (_is_not_logic_expr and _op_performed == 'Sub-expression'):
                     _step_list.append(_to_print)
                     if _print_steps:
-                        print(f"{(_op_performed+':').ljust(15)}  {_to_print}")
+                        print(f"{(_op_performed+':').ljust(15)}  {_to_print}", file=sys.stderr)
                         # print(_to_print)
                     
                 # print(_result.replace('__paren', ''))
@@ -598,6 +598,6 @@ def _steps(_expr, _print_steps=False):
                 setattr(globals()[obj], attr, _orig_attr_values[obj][attr])
         _orig_attr_values = {}
     if _print_steps:
-        print()
+        print(file=sys.stderr)
 
     return _step_list
