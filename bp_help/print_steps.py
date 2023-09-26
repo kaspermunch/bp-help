@@ -24,6 +24,7 @@ Fix that before you use bphelp.
     if not dir_name:
         dir_name = '.'
     tmpname = dir_name + '/._' + os.path.basename(file_name)
+    print(tmpname)
 
     import bp_help.steps
 
@@ -49,6 +50,6 @@ Fix that before you use bphelp.
                         # line = line.replace(comment, f'; print("Line ", sys._getframe().f_lineno, ":", sep="") ; steps("""{expr}""")')
                 o.write(line)
 
-    subprocess.run(f"python {tmpname}", shell=True)
-    # os.remove(tmpname)
+    subprocess.run(f"python {tmpname}", shell=True, stdout=subprocess.DEVNULL)
+    os.remove(tmpname)
 
