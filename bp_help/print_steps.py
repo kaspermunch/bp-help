@@ -24,7 +24,6 @@ Fix that before you use bphelp.
     if not dir_name:
         dir_name = '.'
     tmpname = dir_name + '/._' + os.path.basename(file_name)
-    print(tmpname)
 
     import bp_help.steps
 
@@ -46,7 +45,7 @@ Fix that before you use bphelp.
                     indent = ' ' * (len(expr) - len(expr.lstrip()))
                     expr = expr.strip()
                     if not expr.startswith('#'):
-                        line = indent + f'print("Line ", sys._getframe().f_lineno - 1, " in {os.path.basename(file_name)}:", sep="") ; _steps("""{expr}""", _print_steps=True) ; ' + line
+                        line = indent + f'print("Line ", sys._getframe().f_lineno - 1, " in {os.path.basename(file_name)}:", sep="", file=sys.stderr) ; _steps("""{expr}""", _print_steps=True) ; ' + line
                         # line = line.replace(comment, f'; print("Line ", sys._getframe().f_lineno, ":", sep="") ; steps("""{expr}""")')
                 o.write(line)
 

@@ -14,6 +14,8 @@ import shlex
 import shutil
 from distutils.version import LooseVersion
 import platform
+from typing import Optional
+
 
 # from urllib.request import urlopen
 import locale
@@ -179,7 +181,7 @@ class FunctionExpression(Expression):
         return self.fun + "(" + str(self.exp) + ")"
     
 
-def find_variable_for_key(keys, variables):
+def find_variable_for_key(keys: list, variables: list) -> Optional[str]:
     vars = []
     for var in variables:
         val = globals()[var]
@@ -191,7 +193,7 @@ def find_variable_for_key(keys, variables):
         return None
     
 
-def find_variable_for_index(indices, variables):
+def find_variable_for_index(indices: list[int], variables: list[str]) -> Optional[str]:
     vars = []
     for var in variables:
         val = globals()[var]
@@ -203,7 +205,7 @@ def find_variable_for_index(indices, variables):
         return None    
 
 
-def get_expression(prob, leaf_prob, topic_probs):
+def get_expression(prob: float, leaf_prob: float, topic_probs: dict) -> str:
     return str(randomExpression(prob, leaf_prob, topic_probs))
 
 
@@ -592,7 +594,7 @@ class KeyLogger(RichLog):
         self.write_steps()
 
 
-def format_score(score, current=False):
+def format_score(score: float, current: bool = False) -> float:
     if current:
         style = RichStyle(bold=True, blink=True)
         score = Text(str(score), style=style, justify='right')
@@ -600,16 +602,16 @@ def format_score(score, current=False):
         score = Text(str(score), justify='right')
     return score
 
-def format_score_goal():
+def format_score_goal() -> str:
     score_goal = score_goals[course_week_nr]
     missing_points = int(score_goal - progress['current_score'] * score_multiplier)
     if missing_points < 0:
-       return f"[bold]This week's score gloal: {score_goal:>10}[/bold]\n" f"[green]You are ahead by:        {-missing_points:>10}[/green]\n\n" f"[bold]{next(praise).upper()}![/bold]"
+       return f"[bold]This week's score goal: {score_goal:>10}[/bold]\n" f"[green]You are ahead by:        {-missing_points:>10}[/green]\n\n" f"[bold]{next(praise).upper()}![/bold]"
     else:
-       return f"[bold]This week's score gloal: {score_goal:>10}[/bold]\n" f"[red]You still need to earn:  {missing_points:>10}[/red]\n\n" f"[bold]{next(encouragement).upper()}![/bold]"
+       return f"[bold]This week's score goal: {score_goal:>10}[/bold]\n" f"[red]You still need to earn:  {missing_points:>10}[/red]\n\n" f"[bold]{next(encouragement).upper()}![/bold]"
 
 
-def compute_streaks():
+def compute_streaks() -> dict:
     working_days = defaultdict(list)
     for score, date in progress['scores']:
         weeknr = date.isocalendar().week - course_start_week + 1
@@ -642,13 +644,15 @@ def compute_streaks():
 
     return streaks
 
-def compute_effort():
+def compute_effort() -> dict:
     problems_solved = defaultdict(list)
     for score, date in progress['scores']:
         weeknr = date.isocalendar().week - course_start_week + 1
         weeknr = max(1, weeknr)
         weekday = date.weekday()+1
         problems_solved[weeknr].append(weekday)
+
+    assert len(problems_solved) == 14
 
     effort = {}
     for weeknr in range(1, 15):
@@ -790,8 +794,8 @@ def check_for_conda_update():
     conda_search = subprocess.check_output(cmd, shell=False).decode()
     this_version = conda_search.strip().splitlines()[-1].split()[1]
     if LooseVersion(newest_version) > LooseVersion(this_version):
-        print('\nPlease update bp-help to get the most most recent version ({})'.format(newest_version))
-        print('before you start the game. To update run this command:')
+        print('\nPlease update Myiagi to get the most most recent version ({})'.format(newest_version))
+        print('before you start the game. To update Myiagi, run this command:')
         # msg += '\n\tconda install bp-help={}\n'.format(newest_version)
         print('\n    conda update -y bp-help\n')
         sys.exit()
