@@ -652,8 +652,6 @@ def compute_effort() -> dict:
         weekday = date.weekday()+1
         problems_solved[weeknr].append(weekday)
 
-    assert len(problems_solved) == 14
-
     effort = {}
     for weeknr in range(1, 15):
         effort[weeknr] = [problems_solved[weeknr].count(d) for d in range(1, 8)]
