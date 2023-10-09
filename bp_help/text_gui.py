@@ -408,6 +408,7 @@ from pygments.token import Token
 from pygments.lexers import Python3Lexer
 from pygments.formatters import Terminal256Formatter, BBCodeFormatter, HtmlFormatter
 
+
 class MyStyle(Style):
         styles = {
             Token.String:     'ansigreen',
@@ -422,6 +423,7 @@ class MyStyle(Style):
             Token.Generic: 'ansiblack'
         }
 
+
 def highlight_code(code):
     s = highlight(code, Python3Lexer(), BBCodeFormatter(style=MyStyle))
     color = '#ffffff'
@@ -429,6 +431,7 @@ def highlight_code(code):
     for color, repl in [('#007f00', 'red3'), ('#0000ff', 'black'), ('#7f0000', 'dark_magenta'), ('#00007f', 'dark_goldenrod')]:
         s = re.sub(fr'color={color}(\].*?\[/)color', fr'{repl}\1{repl}', s)
     return s
+
 
 def sparkline_bars(data):
     BARS = u' ▁▂▃▄▅▆▇█'
@@ -466,6 +469,7 @@ def sparkline_bars(data):
     sparkline = ''.join(BARS[i] for i in indexes) + medal
     return sparkline
 
+
 def streak_stars(streak, emoji=''):
 
     if streak == 5:
@@ -480,7 +484,8 @@ def streak_stars(streak, emoji=''):
         return u"|★★     |"
     elif streak == 1:
         return u"|★      |"
-
+    else:
+        return u"|       |"
 
 
 class KeyLogger(RichLog):
@@ -508,6 +513,7 @@ class KeyLogger(RichLog):
         elif event.key == 'enter':
             self.next_expression()
 
+
     def key_up(self):
         if not self.is_correct and self.focal is not None and self.focal > 1:
             i = self.focal - 1
@@ -517,6 +523,7 @@ class KeyLogger(RichLog):
             self.write_steps()
             if self.is_correct_order():
                 self.write(f'\nPress Enter to get next one or Ctrl-C to quit')
+
 
     def key_down(self):
         if not self.is_correct and self.focal is not None and self.focal < len(self.steps_list):
@@ -534,11 +541,7 @@ class KeyLogger(RichLog):
         if self.is_correct:
             # update progress
             score = course_week_nr * len(self.steps_list)/(self.attempts+1)
-
             progress['scores'].append((score, datetime.datetime.now()))
-
-            # progress['current_score'] = sum(s for (s, t) in progress['scores'][-20:])/20 #* 0.9**(time.time() - progress['time'])/(60 * 60 * 24)
-            # progress['highscores'][course_week_nr] = max(progress['current_score'], progress['highscores'][course_week_nr])
             progress['current_score'] = sum(score_multiplier*s*0.9**((time.time()-datetime.datetime.timestamp(t))/(60*60*24)) for (s, t) in progress['scores']) / score_multiplier
             progress['highscores'][course_week_nr] = progress['current_score']
 
@@ -549,12 +552,8 @@ class KeyLogger(RichLog):
 
             self.post_message(self.Updated())
 
-            # points_missing = goal_score - progress['current_score']  * 1000000
-            # if points_missing > 0  and points_missing < 100000000:
-            #     print('Almost there...')
-            #     print('Earn', 'XX' 'to reach goal')
-
         return self.is_correct
+
 
     def write_steps(self):
 
@@ -565,6 +564,7 @@ class KeyLogger(RichLog):
             else:
                 lst.append(f'{i+1:>2}   ' + highlight_code(s))
         self.write(''.join(lst))
+
 
     def next_expression(self):
         self.clear()
@@ -580,7 +580,6 @@ class KeyLogger(RichLog):
             except Exception as e:
                 # TODO: make it more robust instead of catching exceptions...
                 continue
-            # if not (len(steps_list) < min_steps or len(steps_list) > max_steps or any(len(x) > max_expr_len for x in steps_list)):
             if not (len(steps_list) < min_steps or len(steps_list) > max_steps or any(len(x) > max_expr_len for x in steps_list)):
                 break
 
@@ -602,13 +601,14 @@ def format_score(score: float, current: bool = False) -> float:
         score = Text(str(score), justify='right')
     return score
 
+
 def format_score_goal() -> str:
     score_goal = score_goals[course_week_nr]
     missing_points = int(score_goal - progress['current_score'] * score_multiplier)
     if missing_points < 0:
-       return f"[bold]This week's score goal: {score_goal:>10}[/bold]\n" f"[green]You are ahead by:        {-missing_points:>10}[/green]\n\n" f"[bold]{next(praise).upper()}![/bold]"
+       return f"[bold]This week's score goal: {score_goal:>10}[/bold]\n" f"[green]You are ahead by:      {-missing_points:>10}[/green]\n\n" f"[bold]{next(praise).upper()}![/bold]"
     else:
-       return f"[bold]This week's score goal: {score_goal:>10}[/bold]\n" f"[red]You still need to earn:  {missing_points:>10}[/red]\n\n" f"[bold]{next(encouragement).upper()}![/bold]"
+       return f"[bold]This week's score goal: {score_goal:>10}[/bold]\n" f"[red]You still need to earn: {missing_points:>10}[/red]\n\n" f"[bold]{next(encouragement).upper()}![/bold]"
 
 
 def compute_streaks() -> dict:
@@ -644,6 +644,7 @@ def compute_streaks() -> dict:
 
     return streaks
 
+
 def compute_effort() -> dict:
     problems_solved = defaultdict(list)
     for score, date in progress['scores']:
@@ -658,6 +659,7 @@ def compute_effort() -> dict:
 
     return effort
 
+
 class PlayerStats(DataTable):
 
     def on_mount(self):        
@@ -668,7 +670,9 @@ class PlayerStats(DataTable):
 
         #https://www.i2symbol.com/symbols/smileys
 
-        rows = [("", "Stamina", "Streak", "Score"),]
+        has_week_streak = all(streaks[w] == 7 for w in range(course_week_nr)) and streaks[course_week_nr] > 0
+
+        rows = [("", "Stamina", " Streak", "Score"),]
         for weeknr in range(1, 15):
 
             score = int(progress['highscores'][weeknr] * score_multiplier)
@@ -686,9 +690,17 @@ class PlayerStats(DataTable):
             else:
                 sparkline = ''
 
+            if weeknr <= course_week_nr:
+                if has_week_streak or weeknr == course_week_nr:
+                    stars = streak_stars(streaks[weeknr])
+                else:
+                    stars = streak_stars(0)
+            else:
+                stars = ''
+
             rows.append((weeknr,
                         sparkline,
-                        streak_stars(streaks[weeknr]),
+                        stars,
                         score
             ))
 
@@ -718,28 +730,14 @@ class STEPS(Screen):
             yield Static(head)
         with Container(id="app-grid"):
             with Vertical(id="left-pane"):
-                # yield Header()
                 yield KeyLogger()
             with Horizontal(id="top-right"):
-                # yield Header(show_clock=True)
                 self.player_stats = PlayerStats()
                 yield self.player_stats
             with Horizontal(id="bottom-right"):
-                # yield Header()
                 s = format_score_goal()
-                # s = Text(s, style=RichStyle(
-                #     # color='bright_red',
-                #     # bgcolor='yellow', 
-                #     italic=False, 
-                #     bold=True, 
-                #     blink=False), 
-                #     justify='left')
                 self.message_panel = Static(s)
                 yield self.message_panel
-
-    # def on_color_button_selected(self):
-
-    #     self.screen.styles.animate("background", message.color, duration=0.5)
 
 
 class STEPSApp(App):
@@ -766,17 +764,8 @@ class STEPSApp(App):
         self.SCREENS['steps'].player_stats.update_cell_at((course_week_nr-1, 3), 
                                                           format_score(score, current=True))
 
-        f"gloal 22, score {progress['current_score']*score_multiplier}"
-
         self.SCREENS['steps'].message_panel.update(format_score_goal())
 
-
-
-
-# def get_course_week_nr():
-#     course_week_nr = datetime.date.today().isocalendar().week - course_start_week + 1    
-#     course_week_nr = max(1, course_week_nr)
-#     return course_week_nr
 
 def check_for_conda_update():
     """Checks for a more recent conda version and prints a message.
@@ -794,7 +783,6 @@ def check_for_conda_update():
     if LooseVersion(newest_version) > LooseVersion(this_version):
         print('\nPlease update Myiagi to get the most most recent version ({})'.format(newest_version))
         print('before you start the game. To update Myiagi, run this command:')
-        # msg += '\n\tconda install bp-help={}\n'.format(newest_version)
         print('\n    conda update -y bp-help\n')
         sys.exit()
 
@@ -808,9 +796,7 @@ def run():
     check_for_conda_update()
 
     global course_week_nr, progress, pickle_file_name, score_goals
-    # course_week_nr = get_course_week_nr()
 
-    # pickle_file_name = os.path.dirname(__file__) + '~/.bp_help_progress.pkl'
     pickle_file_name = os.path.join(os.path.expanduser('~'), '.bp_help_progress.pkl')
      
     if os.path.exists(pickle_file_name):
@@ -822,7 +808,6 @@ def run():
 
     progress['current_score'] = sum(score_multiplier*s*0.9**((time.time()-datetime.datetime.timestamp(t))/(60*60*24)) for (s, t) in progress['scores']) / score_multiplier
     progress['highscores'][course_week_nr] = progress['current_score']
-#    assert 0, (progress, [(time.time()-datetime.datetime.timestamp(t)) for (s, t) in progress['scores']])
 
     app = STEPSApp()
     app.run()

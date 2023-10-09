@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 
 setup(name='bp_help',
       test_suite='tests',
-      version='1.0.13',
+      version='1.0.14',
       description='',
       long_description='',
       author='Kasper Munch',
@@ -24,7 +24,7 @@ setup(name='bp_help',
                   ],
         },
         install_requires=[
-          'python<3.11,>=3.9',
+          'python>=3.9,<3.11',
           'pygments',
           'textual',
           'rich',
