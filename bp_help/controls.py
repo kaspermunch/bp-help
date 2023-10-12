@@ -94,12 +94,12 @@ if course_week_nr == 1:
 elif course_week_nr == 2:
     leaf_prob = 0.66
     min_steps = 5
-    max_steps = 8
+    max_steps = 7
     max_expr_len = 50
 elif course_week_nr == 3:
     leaf_prob = 0.66
     min_steps = 5
-    max_steps = 8
+    max_steps = 7
     max_expr_len = 70
 elif course_week_nr == 4:
     leaf_prob = 0.66
@@ -109,37 +109,37 @@ elif course_week_nr == 4:
 elif course_week_nr == 5:
     leaf_prob = 0.66
     min_steps = 5
-    max_steps = 9
+    max_steps = 8
     max_expr_len = 80
 elif course_week_nr == 6:
     leaf_prob = 0.66
     min_steps = 6
-    max_steps = 9
+    max_steps = 8
     max_expr_len = 80
 elif course_week_nr == 7:
     leaf_prob = 0.66
     min_steps = 6
-    max_steps = 10
+    max_steps = 9
     max_expr_len = 80
 elif course_week_nr == 8:
     leaf_prob = 0.66
     min_steps = 6
-    max_steps = 10
+    max_steps = 9
     max_expr_len = 80
 elif course_week_nr == 9:
     leaf_prob = 0.66
     min_steps = 6
-    max_steps = 10
+    max_steps = 9
     max_expr_len = 80
 elif course_week_nr == 10:
     leaf_prob = 0.6
     min_steps = 7
-    max_steps = 10
+    max_steps = 19
     max_expr_len = 80
 else:
     leaf_prob = 0.6
     min_steps = 8
-    max_steps = 10
+    max_steps = 9
     max_expr_len = 80
 
 # max_steps = 10  # max(min(course_week_nr * 2, 10), min_steps) # 3, 4, 6, 10, 10, 10, 
@@ -147,6 +147,8 @@ else:
 
 course_start_week = 35
 
+day_delta = 0
+                              
 #course_start_br = None
 
 score_goals = dict((w, w*score_multiplier*20) for w in range(1, 15))

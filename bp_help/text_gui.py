@@ -16,6 +16,10 @@ from distutils.version import LooseVersion
 import platform
 from typing import Optional
 
+import argparse
+from textwrap import wrap
+
+
 
 # from urllib.request import urlopen
 import locale
@@ -27,8 +31,6 @@ progress = None
 #                        course_week_nr, leaf_prob, course_start_week, score_goals)
 
 exec(open(os.path.dirname(__file__) + '/steps.py').read())
-
-
 
 # # get updated controls from dropbox
 # import urllib.request
@@ -470,22 +472,41 @@ def sparkline_bars(data):
     return sparkline
 
 
-def streak_stars(streak, emoji=''):
+def streak_stars(streaks, weeknr, current=False):
 
-    if streak == 5:
-        return u"|[bright_red]★★★★★★★[/bright_red]|🏆"
-    elif streak == 4:
-        return u"|[red]★★★★★★ [/red]|"
-    elif streak == 4:
-        return u"|★★★★   |"
-    elif streak == 3:
-        return u"|★★★    |"
-    elif streak == 2:
-        return u"|★★     |"
-    elif streak == 1:
-        return u"|★      |"
+    # if streak == 7:
+    #     return u"|[bright_red]★★★★★★★[/bright_red]|🏆"
+    # elif streak == 6:
+    #     return u"|[red]★★★★★★ [/red]|"
+    # elif streak == 5:
+    #     return u"|★★★★★  |"
+    # elif streak == 4:
+    #     return u"|★★★★   |"
+    # elif streak == 3:
+    #     return u"|★★★    |"
+    # elif streak == 2:
+    #     return u"|★★     |"
+    # elif streak == 1:
+    #     return u"|★      |"
+    # else:
+    #     return u"|       |"
+
+    tot_steak = sum(streaks.values())
+    begin, end, badge = '', '', ''
+    if tot_steak > 2*7:
+        begin = '[red]'
+        end = '[/red]'
+
+    if tot_steak > 7*7 and weeknr == course_week_nr:
+        badge = '🏆'
+
+    stars = '★'*streaks[weeknr]
+    if current:
+       return f'|{begin}{stars:<7}{end}|{badge}'
     else:
-        return u"|       |"
+       return f'|{begin}{stars:>7}{end}|{badge}'
+
+
 
 
 class KeyLogger(RichLog):
@@ -510,9 +531,10 @@ class KeyLogger(RichLog):
                 self.clear()
                 self.focal = line_num
                 self.write_steps()
+        elif not self.is_correct and event.key == 'n':
+            self.next_expression()
         elif event.key == 'enter':
             self.next_expression()
-
 
     def key_up(self):
         if not self.is_correct and self.focal is not None and self.focal > 1:
@@ -541,7 +563,7 @@ class KeyLogger(RichLog):
         if self.is_correct:
             # update progress
             score = course_week_nr * len(self.steps_list)/(self.attempts+1)
-            progress['scores'].append((score, datetime.datetime.now()))
+            progress['scores'].append((score, (datetime.datetime.now()+datetime.timedelta(days=day_delta))))
             progress['current_score'] = sum(score_multiplier*s*0.9**((time.time()-datetime.datetime.timestamp(t))/(60*60*24)) for (s, t) in progress['scores']) / score_multiplier
             progress['highscores'][course_week_nr] = progress['current_score']
 
@@ -627,20 +649,43 @@ def compute_streaks() -> dict:
         return i - x
         
     streaks = defaultdict(int)
-    for weeknr in range(1, 15):
+    for weeknr in range(course_week_nr, 0, -1):
         days = sorted(working_days[weeknr])
-        streak = 0
         conseq_days = []
         for d, g in groupby(enumerate(days), conseq):
             conseq_days = list(map(itemgetter(1), g))
             if weeknr == course_week_nr:
-                if datetime.date.today().weekday()+1 in conseq_days:
+                if (datetime.date.today()+datetime.timedelta(days=day_delta)).weekday()+1 in conseq_days:
                     break
             elif 7 in conseq_days:
                 break
 
         streak = len(conseq_days)
         streaks[weeknr] = streak
+
+        if 1 not in conseq_days:
+            break
+
+
+    # for weeknr in range(course_week_nr, 0, -1):
+    #     days = sorted(working_days[weeknr])
+    #     conseq_days = []
+    #     for d, g in groupby(enumerate(days), conseq):
+    #         conseq_days = list(map(itemgetter(1), g))
+    #         if weeknr == course_week_nr:
+    #             if (datetime.date.today()+datetime.timedelta(days=day_delta)).weekday()+1 not in conseq_days:
+    #                 break
+    #         elif 7 in conseq_days:
+    #             break
+
+    #     streaks[weeknr] = len(conseq_days)
+    #     if 1 not in conseq_days:
+    #         break
+
+
+
+
+
 
     return streaks
 
@@ -670,7 +715,7 @@ class PlayerStats(DataTable):
 
         #https://www.i2symbol.com/symbols/smileys
 
-        has_week_streak = all(streaks[w] == 7 for w in range(course_week_nr)) and streaks[course_week_nr] > 0
+        # has_week_streak = all(streaks[w] == 7 for w in range(course_week_nr)) and streaks[course_week_nr] > 0
 
         rows = [("", "Stamina", " Streak", "Score"),]
         for weeknr in range(1, 15):
@@ -691,10 +736,10 @@ class PlayerStats(DataTable):
                 sparkline = ''
 
             if weeknr <= course_week_nr:
-                if has_week_streak or weeknr == course_week_nr:
-                    stars = streak_stars(streaks[weeknr])
+                if weeknr == course_week_nr:
+                    stars = streak_stars(streaks, weeknr, current=True)
                 else:
-                    stars = streak_stars(0)
+                    stars = streak_stars(streaks, weeknr)
             else:
                 stars = ''
 
@@ -760,7 +805,7 @@ class STEPSApp(App):
                                                           sparkline_bars(effort[course_week_nr]))
 
         self.SCREENS['steps'].player_stats.update_cell_at((course_week_nr-1, 2), 
-                                                          streak_stars(streaks[course_week_nr]))
+                                                          streak_stars(streaks, course_week_nr, current=True))
         self.SCREENS['steps'].player_stats.update_cell_at((course_week_nr-1, 3), 
                                                           format_score(score, current=True))
 
@@ -789,13 +834,50 @@ def check_for_conda_update():
 
 def run():
 
+    global course_week_nr, progress, pickle_file_name, score_goals, day_delta
+
     if LooseVersion(platform.python_version()) >= LooseVersion('3.11'):
         print(f'It seems you are running python {platform.python_version()}. This version is not yet supported.')
         sys.exit()
 
-    check_for_conda_update()
+    description = """
+    
+    """
 
-    global course_week_nr, progress, pickle_file_name, score_goals
+    not_wrapped = """ """
+
+    description = "\n".join(wrap(description.strip(), 80)) + "\n\n" + not_wrapped
+
+    parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
+                                        description=description)
+
+    parser.add_argument('-w',
+                    dest="course_week_nr",
+                    type=int,
+                    default=None,
+                    help='Course week number.')
+    parser.add_argument('-d',
+                    dest='day_delta',
+                    type=int,
+                    default=None,
+                    help="Number of days before weekday.")
+    parser.add_argument('-s',
+                    dest='skip_update_check',
+                    action='store_true',
+                    default=False,
+                    help="Skip checking for updates.")
+
+    args = parser.parse_args()
+
+    if not args.skip_update_check:
+        check_for_conda_update()
+
+    if args.course_week_nr is not None:
+        day_delta = (args.course_week_nr - course_week_nr) * 7
+        course_week_nr = args.course_week_nr
+    if args.day_delta is not None:
+        day_delta += args.day_delta
+        
 
     pickle_file_name = os.path.join(os.path.expanduser('~'), '.bp_help_progress.pkl')
      
@@ -814,5 +896,6 @@ def run():
 
 
 if __name__ == "__main__":
+
     app = STEPSApp()
     app.run()
