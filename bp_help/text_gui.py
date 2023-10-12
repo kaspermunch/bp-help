@@ -659,6 +659,8 @@ def compute_streaks() -> dict:
                     break
             elif 7 in conseq_days:
                 break
+        if weeknr == vacation_week:
+            conseq_days = [1, 2, 3, 4, 5, 6, 7]
 
         streak = len(conseq_days)
         streaks[weeknr] = streak
@@ -699,7 +701,7 @@ def compute_effort() -> dict:
         problems_solved[weeknr].append(weekday)
 
     effort = {}
-    for weeknr in range(1, 15):
+    for weeknr in range(1, 16):
         effort[weeknr] = [problems_solved[weeknr].count(d) for d in range(1, 8)]
 
     return effort
@@ -718,7 +720,7 @@ class PlayerStats(DataTable):
         # has_week_streak = all(streaks[w] == 7 for w in range(course_week_nr)) and streaks[course_week_nr] > 0
 
         rows = [("", "Stamina", " Streak", "Score"),]
-        for weeknr in range(1, 15):
+        for weeknr in range(1, 16):
 
             score = int(progress['highscores'][weeknr] * score_multiplier)
 
@@ -742,6 +744,12 @@ class PlayerStats(DataTable):
                     stars = streak_stars(streaks, weeknr)
             else:
                 stars = ''
+
+            if weeknr <= course_week_nr:
+                if weeknr == vacation_week:
+                    weeknr, sparkline, score = '-', 'VACATION', '--------'
+                elif weeknr > vacation_week:
+                    weeknr -= 1
 
             rows.append((weeknr,
                         sparkline,
@@ -884,9 +892,14 @@ def run():
     if os.path.exists(pickle_file_name):
         with open(pickle_file_name, 'rb') as pickle_file:
             progress = pickle.load(pickle_file)
+        ##########################################################
+        # hack to fix old progress files
+        if 15 not in progress['highscores']:
+            progress['highscores'][15] = 0
+        ##########################################################
     else:
         progress = {'scores': [], 'current_score': 0,
-                    'highscores': dict([(w, 0) for w in range(1, 15)])}
+                    'highscores': dict([(w, 0) for w in range(1, 16)])}
 
     progress['current_score'] = sum(score_multiplier*s*0.9**((time.time()-datetime.datetime.timestamp(t))/(60*60*24)) for (s, t) in progress['scores']) / score_multiplier
     progress['highscores'][course_week_nr] = progress['current_score']

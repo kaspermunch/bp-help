@@ -121,7 +121,7 @@ elif course_week_nr == 7:
     min_steps = 6
     max_steps = 9
     max_expr_len = 80
-elif course_week_nr == 8:
+elif course_week_nr == 8: # Vacation week
     leaf_prob = 0.66
     min_steps = 6
     max_steps = 9
@@ -132,6 +132,11 @@ elif course_week_nr == 9:
     max_steps = 9
     max_expr_len = 80
 elif course_week_nr == 10:
+    leaf_prob = 0.66
+    min_steps = 6
+    max_steps = 9
+    max_expr_len = 80
+elif course_week_nr == 11:
     leaf_prob = 0.6
     min_steps = 7
     max_steps = 19
@@ -146,12 +151,12 @@ else:
 
 
 course_start_week = 35
-
+vacation_week = 8
 day_delta = 0
                               
 #course_start_br = None
 
-score_goals = dict((w, w*score_multiplier*20) for w in range(1, 15))
+score_goals = dict((w, w*score_multiplier*20) for w in range(1, 16))
 
 
 #assert 0, score_goals
