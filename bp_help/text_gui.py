@@ -498,7 +498,7 @@ def streak_stars(streaks, weeknr, current=False):
         end = '[/red]'
 
     if tot_steak > 7*7 and weeknr == course_week_nr:
-        badge = '🏆'
+        badge = '🥇'
 
     stars = '★'*streaks[weeknr]
     if current:
@@ -719,10 +719,16 @@ class PlayerStats(DataTable):
 
         # has_week_streak = all(streaks[w] == 7 for w in range(course_week_nr)) and streaks[course_week_nr] > 0
 
-        rows = [("", "Stamina", " Streak", "Score"),]
+        rows = [("", "Stamina", " Streak", "Score", "Trophies"),]
         for weeknr in range(1, 16):
 
             score = int(progress['highscores'][weeknr] * score_multiplier)
+
+            if weeknr <= course_week_nr and score >= score_goals[weeknr]:
+                trophy = '🏆'
+                # trophy = '🥇'
+            else:
+                trophy = ''
 
             if weeknr > course_week_nr:
                 score = ''
@@ -747,14 +753,15 @@ class PlayerStats(DataTable):
 
             if weeknr <= course_week_nr:
                 if weeknr == vacation_week:
-                    weeknr, sparkline, score = '-', 'VACATION', '--------'
+                    weeknr, sparkline, score, trophy = '-', 'VACATION', '--------', ''
                 elif weeknr > vacation_week:
                     weeknr -= 1
 
             rows.append((weeknr,
                         sparkline,
                         stars,
-                        score
+                        score,
+                        trophy
             ))
 
         header_style = RichStyle(color='bright_white', bold=False, blink=False)
@@ -816,6 +823,8 @@ class STEPSApp(App):
                                                           streak_stars(streaks, course_week_nr, current=True))
         self.SCREENS['steps'].player_stats.update_cell_at((course_week_nr-1, 3), 
                                                           format_score(score, current=True))
+        self.SCREENS['steps'].player_stats.update_cell_at((course_week_nr-1, 4), 
+                                                          '🏆' if score >= score_goals[course_week_nr] else '')
 
         self.SCREENS['steps'].message_panel.update(format_score_goal())
 

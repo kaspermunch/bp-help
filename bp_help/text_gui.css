@@ -86,14 +86,15 @@ STEPS>Static {
 }
 
 #top-right > PlayerStats {
-    dock: right;
+    /* dock: right; */
     /* border: black; */
     color: $primary;
-    width: auto;
-    height: 100%;
+    /* width: auto; */
+    /* height: 100%; */
     /* column-span: 1;
     row-span: 1; */
-    margin-right: 1;
+    /* margin-right: 1; */
+    margin-left: 1;
     background: $background;
 }
 
