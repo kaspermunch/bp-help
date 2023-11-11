@@ -139,7 +139,7 @@ elif course_week_nr == 10:
 elif course_week_nr == 11:
     leaf_prob = 0.6
     min_steps = 7
-    max_steps = 19
+    max_steps = 9
     max_expr_len = 80
 else:
     leaf_prob = 0.6
