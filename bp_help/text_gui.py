@@ -807,7 +807,9 @@ class STEPSApp(App[None]):
     SCREENS = {"steps": "STEPS"}
     BINDINGS = [("escape", "push_screen('steps')", "STEPS")]
 
+
     def on_mount(self) -> None:        
+        self.install_screen(STEPS(), name="steps")
         self.push_screen(self.SCREENS['steps'])
         # self.install_screen(STEPS(), name="steps")
 
