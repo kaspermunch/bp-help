@@ -803,19 +803,10 @@ class STEPS(Screen):
 class STEPSApp(App):
     CSS_PATH = "text_gui.css"
     dark = False
-    # SCREENS = {"steps": STEPS()}
-    SCREENS = {"steps": STEPS}
+    SCREENS = {"steps": STEPS()}
     BINDINGS = [("escape", "push_screen('steps')", "STEPS")]
 
-    # def __init__(self):
-    #     super().__init__()
-    #     self.install_screen(STEPS(), name="steps")
-
     def on_mount(self) -> None:
-        # try:        
-        #     self.install_screen(STEPS(), name="steps")
-        # except ScreenError:
-        #     pass
         self.push_screen(self.SCREENS['steps'])
         # self.install_screen(STEPS(), name="steps")
 
