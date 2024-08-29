@@ -778,7 +778,7 @@ class PlayerStats(DataTable):
 # encouragement, personal comments based on past streaks (you can do it again)
 
 
-class STEPS(Screen):
+class STEPS(Screen[None]):
     BINDINGS = [("h", "app.pop_screen", "Pop screen")]
 
     def compose(self) -> ComposeResult:
@@ -800,7 +800,7 @@ class STEPS(Screen):
                 yield self.message_panel
 
 
-class STEPSApp(App):
+class STEPSApp(App[None]):
     CSS_PATH = "text_gui.css"
     dark = False
     # SCREENS = {"steps": STEPS()}
