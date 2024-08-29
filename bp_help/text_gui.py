@@ -803,7 +803,8 @@ class STEPS(Screen):
 class STEPSApp(App):
     CSS_PATH = "text_gui.css"
     dark = False
-    SCREENS = {"steps": STEPS()}
+    # SCREENS = {"steps": STEPS()}
+    SCREENS = {"steps": STEPS}
     BINDINGS = [("escape", "push_screen('steps')", "STEPS")]
 
     def on_mount(self) -> None:        
