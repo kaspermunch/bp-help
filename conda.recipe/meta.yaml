@@ -17,15 +17,10 @@ build:
 
 requirements:
   host:
-    - python=3.9
+    - python
     - pip
   run:
-    - python=3.9
-    # - pygments=2.16.1
-    # - textual=0.37.1
-    # - rich=13.6.0
-    # - art=6.1
-
+    - python
 
 test:
   imports:
