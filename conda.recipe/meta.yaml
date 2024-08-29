@@ -1,4 +1,4 @@
-{% set version = "1.0.24" %}
+{% set version = "1.0.25" %}
 
 package:
   name: bp-help

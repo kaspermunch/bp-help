@@ -812,10 +812,10 @@ class STEPSApp(App):
     #     self.install_screen(STEPS(), name="steps")
 
     def on_mount(self) -> None:
-        # try:        
-        #     self.install_screen(STEPS(), name="steps")
-        # except ScreenError:
-        #     pass
+        try:        
+            self.install_screen(STEPS(), name="steps")
+        except ScreenError:
+            pass
         self.push_screen(self.SCREENS['steps'])
         # self.install_screen(STEPS(), name="steps")
 
