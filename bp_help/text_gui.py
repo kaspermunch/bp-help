@@ -390,7 +390,7 @@ def _randomExpression(prob, leaf_prob, topic_probs):
 exec(open(os.path.dirname(__file__) + '/steps.py').read())
 
 
-from textual.app import App, ComposeResult, RenderResult
+from textual.app import App, ComposeResult, RenderResult, ScreenError
 from textual.containers import Container, Horizontal, Vertical
 from textual.widgets import Static
 from textual.screen import Screen
@@ -778,7 +778,7 @@ class PlayerStats(DataTable):
 # encouragement, personal comments based on past streaks (you can do it again)
 
 
-class STEPS(Screen[None]):
+class STEPS(Screen):
     BINDINGS = [("h", "app.pop_screen", "Pop screen")]
 
     def compose(self) -> ComposeResult:
@@ -800,16 +800,22 @@ class STEPS(Screen[None]):
                 yield self.message_panel
 
 
-class STEPSApp(App[None]):
+class STEPSApp(App):
     CSS_PATH = "text_gui.css"
     dark = False
     # SCREENS = {"steps": STEPS()}
     SCREENS = {"steps": "STEPS"}
     BINDINGS = [("escape", "push_screen('steps')", "STEPS")]
 
-
-    def on_mount(self) -> None:        
+    def __init__(self):
+        super().__init__()
         self.install_screen(STEPS(), name="steps")
+
+    def on_mount(self) -> None:
+        # try:        
+        #     self.install_screen(STEPS(), name="steps")
+        # except ScreenError:
+        #     pass
         self.push_screen(self.SCREENS['steps'])
         # self.install_screen(STEPS(), name="steps")
 
