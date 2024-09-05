@@ -37,16 +37,21 @@ Fix that before you use bphelp.
             s = f'exec("""{escaped}""")'
             print(s, file=o)
 
+            comment_tags = [
+                '# PRINT STEPS', '#PRINT STEPS', '# PRINTSTEPS', '#PRINTSTEPS', '# PRINT-STEPS', '#PRINT-STEPS',
+                '# print steps', '#print steps', '# printsteps', '#printsteps', '# print-steps', '#print-steps',
+                ]
             for lineno, line in enumerate(i):
-                comment = '# PRINT STEPS'
-                if comment in line:
-                    idx = line.index(comment)
-                    expr = line[:idx]
-                    indent = ' ' * (len(expr) - len(expr.lstrip()))
-                    expr = expr.strip()
-                    if not expr.startswith('#'):
-                        line = indent + f'print("Line ", sys._getframe().f_lineno - 1, " in {os.path.basename(file_name)}:", sep="", file=sys.stderr) ; _steps("""{expr}""", _print_steps=True) ; ' + line
-                        # line = line.replace(comment, f'; print("Line ", sys._getframe().f_lineno, ":", sep="") ; steps("""{expr}""")')
+                for comment in comment_tags:
+                    if comment in line:
+                        idx = line.index(comment)
+                        expr = line[:idx]
+                        indent = ' ' * (len(expr) - len(expr.lstrip()))
+                        expr = expr.strip()
+                        if not expr.startswith('#'):
+                            line = indent + f'print("Line ", sys._getframe().f_lineno - 1, " in {os.path.basename(file_name)}:", sep="", file=sys.stderr) ; _steps("""{expr}""", _print_steps=True) ; ' + line
+                            # line = line.replace(comment, f'; print("Line ", sys._getframe().f_lineno, ":", sep="") ; steps("""{expr}""")')
+                        break
                 o.write(line)
 
     subprocess.run(f"python {tmpname}", shell=True, stdout=subprocess.DEVNULL)

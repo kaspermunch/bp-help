@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 
 setup(name='bp_help',
       test_suite='tests',
-      version='1.0.30',
+      version='1.0.32',
       description='',
       long_description='',
       author='Kasper Munch',
