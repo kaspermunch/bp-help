@@ -1,0 +1,39 @@
+[workspace]
+authors = ["Kasper Munch <kaspermunch@birc.au.dk>"]
+channels = ["sepandhaghighi", "kaspermunch", "conda-forge", "main", "r", "msys2"]
+name = "bioprog"
+platforms = ["osx-arm64"]
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]
+art = { version = "==6.0", build = "py_0" }
+bp-help = { version = "==1.0.9", build = "py_0" }
+bzip2 = { version = "==1.0.8", build = "h3422bc3_4" }
+ca-certificates = { version = "==2023.7.22", build = "hf0a4a13_0" }
+importlib-metadata = { version = "==6.8.0", build = "pyha770c72_0" }
+libcxx = { version = "==16.0.6", build = "h4653b0c_0" }
+libffi = { version = "==3.4.4", build = "hca03da5_0" }
+libsqlite = { version = "==3.43.0", build = "hb31c410_0" }
+libzlib = { version = "==1.2.13", build = "h53f4e23_5" }
+markdown-it-py = { version = "==3.0.0", build = "pyhd8ed1ab_0" }
+mdurl = { version = "==0.1.0", build = "pyhd8ed1ab_0" }
+ncurses = { version = "==6.4", build = "h7ea286d_0" }
+openssl = { version = "==3.1.2", build = "h53f4e23_0" }
+pip = { version = "==23.2.1", build = "pyhd8ed1ab_0" }
+pygments = { version = "==2.16.1", build = "pyhd8ed1ab_0" }
+python = { version = "==3.9.18", build = "hfa1ae8a_0_cpython" }
+readline = { version = "==8.2", build = "h92ec313_1" }
+rich = { version = "==13.5.1", build = "pyhd8ed1ab_0" }
+setuptools = { version = "==68.2.2", build = "pyhd8ed1ab_0" }
+sqlite = { version = "==3.43.0", build = "h203b68d_0" }
+textual = { version = "==0.35.1", build = "pyhd8ed1ab_0" }
+tk = { version = "==8.6.12", build = "he1e0b03_0" }
+typing-extensions = { version = "==4.7.1", build = "hd8ed1ab_0" }
+typing_extensions = { version = "==4.7.1", build = "pyha770c72_0" }
+tzdata = { version = "==2023c", build = "h71feb2d_0" }
+wheel = { version = "==0.41.2", build = "pyhd8ed1ab_0" }
+xz = { version = "==5.4.2", build = "h80987f9_0" }
+zipp = { version = "==3.16.2", build = "pyhd8ed1ab_0" }
+zlib = { version = "==1.2.13", build = "h53f4e23_5" }

@@ -477,23 +477,25 @@ def __paren(_expr):
 _orig_values = {}
 _orig_attr_values = {}
 
-def _steps(_expr, _print_steps=False):
+def _steps(_expr, _print_steps=False, _with_labels=False):
 
     _step_list = []
+    _label_list = []
 
     # _dictionaries holding the original values of variables and attributes
     global _orig_values
     global _orig_attr_values
 
     # subst white space for single space to produce correspondence between _expr and _result
-    # _expr = re.sub(r'([+]+)', r' \g<1> ', _expr) 
-    _expr = re.sub(r'\s+(?=(?:[^\'"]*[\'"][^\'"]*[\'"])*[^\'"]*$)', r' ', _expr) 
-    # _expr = re.sub(r'\s+(?=([^"]*"[^"]*")*[^"]', r' ', _expr) 
+    # _expr = re.sub(r'([+]+)', r' \g<1> ', _expr)
+    _expr = re.sub(r'\s+(?=(?:[^\'"]*[\'"][^\'"]*[\'"])*[^\'"]*$)', r' ', _expr)
+    # _expr = re.sub(r'\s+(?=([^"]*"[^"]*")*[^"]', r' ', _expr)
 
     # print the expression
     if _print_steps:
         print(f"{'As written:'.ljust(15)}  {_expr}", file=sys.stderr)
     _step_list.append(_expr)
+    _label_list.append('As written')
 
     # if it is an assignment statement, cut off the assignment part as a prefix
     _match = re.match(r'\s*\S+\s*[*/+-]?=\s*', _expr)
@@ -581,6 +583,7 @@ def _steps(_expr, _print_steps=False):
                 _to_print = _result.replace('__paren', '')
                 if not (_is_not_logic_expr and _op_performed == 'Sub-expression'):
                     _step_list.append(_to_print)
+                    _label_list.append(_op_performed)
                     if _print_steps:
                         print(f"{(_op_performed+':').ljust(15)}  {_to_print}", file=sys.stderr)
                         # print(_to_print)
@@ -600,4 +603,6 @@ def _steps(_expr, _print_steps=False):
     if _print_steps:
         print(file=sys.stderr)
 
+    if _with_labels:
+        return list(zip(_label_list, _step_list))
     return _step_list

@@ -129,3 +129,6 @@ dmypy.json
 .pyre/
 
 steps
+# pixi environments
+.pixi/*
+!.pixi/config.toml

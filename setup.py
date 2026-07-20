@@ -23,11 +23,14 @@ setup(name='bp_help',
                   'myiagi=bp_help.text_gui:run'
                   ],
         },
+        python_requires='>=3.9,<3.11',
         install_requires=[
-          'python>=3.9,<3.11',
           'pygments',
           'textual',
           'rich',
           'art',
-        ]
+        ],
+        extras_require={
+          'notebook': ['anywidget>=0.9', 'traitlets>=5', 'ipython'],
+        },
       )
